@@ -75,7 +75,7 @@ def delete(task_no):
     for i, task in enumerate(tasks, start=1):
         task[0] = str(i)
     save(tasks)
-    print(f"=== Task Deleted: {deleted[1]}")
+    print(f"=== Task Deleted: {deleted[1]} ===")
 
 
 def main():
