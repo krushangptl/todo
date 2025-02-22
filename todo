@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+import csv
+import os
+import sys
+
+FILENAME = "task.csv"
+
+
+# create if needed and load file
+def load():
+    if not os.path.exists(FILENAME):
+        with open(FILENAME, "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Index", "Task", "Status"])
+
+    with open(FILENAME, newline="") as file:
+        reader = csv.reader(file)
+        tasks = list(reader)
+
+    return tasks[1:] if len(tasks) > 1 else []
+
+
+# save tasks
+def save(tasks):
+    with open(FILENAME, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Index", "Task", "Status"])
+        writer.writerows(tasks)
+
+
+# add tasks
+def add(task):
+    tasks = load()
+    index = len(tasks) + 1
+    tasks.append([index, task, "Pending"])
+    save(tasks)
+    print("=== Task Added! ===")
+
+
+# list tasks
+def list_tasks():
+    tasks = load()
+    if not tasks:
+        print("=== No Tasks ===")
+        return
+
+    print("=== Todo ===")
+    print("Index | Task | Status")
+    print("---------------------")
+    for index, task, status in tasks:
+        print(f"{index} | {task} | {status}")
+
+
+# mark task as done
+def done(task_no):
+    tasks = load()
+    if task_no < 1 or task_no > len(tasks):
+        print("=== Invalid Index ===")
+        return
+
+    tasks[task_no - 1][2] = "Done"
+    save(tasks)
+    print(f"=== Task Completed: {tasks[task_no - 1][1]} ===")
+
+
+# delete task
+def delete(task_no):
+    tasks = load()
+    if task_no < 1 or task_no > len(tasks):
+        print("=== Invalid Index ===")
+        return
+
+    deleted = tasks.pop(task_no - 1)
+    for i, task in enumerate(tasks, start=1):
+        task[0] = str(i)
+    save(tasks)
+    print(f"=== Task Deleted: {deleted[1]}")
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: todo [add|list|done|delete] [todo]")
+        return
+
+    command = sys.argv[1]
+
+    if command == "list":
+        list_tasks()
+    elif command == "add":
+        task = " ".join(sys.argv[2:])
+        if not task:
+            print("=== Please Provide Task ===")
+        else:
+            add(task)
+    elif command == "done":
+        if len(sys.argv) < 3 or not sys.argv[2].isdigit():
+            print("=== Please Provide Valid Task Index ===")
+        else:
+            done(int(sys.argv[2]))
+    elif command == "delete":
+        if len(sys.argv) < 3 or not sys.argv[2].isdigit():
+            print("=== Please Provide Valid Task Index ===")
+        else:
+            delete(int(sys.argv[2]))
+    else:
+        print("=== Unknown Command! Use: add, list, done, delete ===")
+
+
+if __name__ == "__main__":
+    main()
