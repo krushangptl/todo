@@ -4,7 +4,8 @@ import csv
 import os
 import sys
 
-FILENAME = "task.csv"
+HOME_DIR = os.path.expanduser("~")
+FILENAME = os.path.join(HOME_DIR, "task.csv")
 
 
 # create if needed and load file
